@@ -1,0 +1,55 @@
+{
+  "tasks": [
+    {
+      "kind": "Echo",
+      "params": {
+        "results": {
+          "path": "out/echo",
+          "save": false
+        }
+      }
+    },
+    {
+      "kind": "Policy",
+      "params": {
+        "convergence": {
+          "min_iterations": 10,
+          "max_iterations": 100,
+          "stopping_criteria": {
+            "kind": "IterationLimit",
+            "params": {
+              "num_iterations": 100
+            }
+          }
+        },
+        "risk_measure": {
+          "kind": "Expectation",
+          "params": {}
+        },
+        "parallel_scheme": {
+          "kind": "Serial",
+          "params": {}
+        },
+        "results": {
+          "path": "out/policy",
+          "save": true
+        }
+      }
+    },
+    {
+      "kind": "Simulation",
+      "params": {
+        "num_simulated_series": 2000,
+        "policy_path": "out/policy",
+        "parallel_scheme": {
+          "kind": "Serial",
+          "params": {}
+        },
+        "results": {
+          "path": "out/simulation",
+          "save": true
+        }
+      }
+    }
+  ]
+}

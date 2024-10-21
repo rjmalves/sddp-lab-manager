@@ -1,0 +1,10 @@
+{
+    "source_dir": "./generated",
+    "target_dir": "./processed",
+    "entrypoints": {
+        "sddp": "/home/rogerio/ONS/sddp-lab-manager/assets/default_sddp.jl"
+    },
+    "environment": "/home/rogerio/git/sddp-lab",
+    "image_name": "/home/rogerio/git/sddp-lab/SDDPlab.so",
+    "processes": 2
+}
