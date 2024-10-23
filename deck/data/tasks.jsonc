@@ -5,7 +5,11 @@
       "params": {
         "results": {
           "path": "out/echo",
-          "save": false
+          "save": false,
+          "format": {
+            "kind": "AnyFormat",
+            "params": {}
+          }
         }
       }
     },
@@ -32,7 +36,11 @@
         },
         "results": {
           "path": "out/policy",
-          "save": true
+          "save": true,
+          "format": {
+            "kind": "ParquetFormat",
+            "params": {}
+          }
         }
       }
     },
@@ -47,7 +55,11 @@
         },
         "results": {
           "path": "out/simulation",
-          "save": true
+          "save": true,
+          "format": {
+            "kind": "ParquetFormat",
+            "params": {}
+          }
         }
       }
     }
