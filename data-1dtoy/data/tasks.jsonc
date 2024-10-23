@@ -17,18 +17,27 @@
       "kind": "Policy",
       "params": {
         "convergence": {
+          // Min/Max number of iterations
           "min_iterations": 10,
-          "max_iterations": 100,
+          "max_iterations": 32,
+          // Early stopping criteria and params
           "stopping_criteria": {
+            // IterationLimit | TimeLimit | LowerBoundStability | Statistical | ...
             "kind": "IterationLimit",
             "params": {
-              "num_iterations": 100
+              "num_iterations": 32
             }
           }
         },
         "risk_measure": {
-          "kind": "Expectation",
-          "params": {}
+          // Expectation | WorstCase | AVaR | CVaR | ...
+          "kind": "CVaR",
+          // each risk measure might need different params,
+          // such as the confidence level for AVaR, etc.
+          "params": {
+            "alpha": 0.2,
+            "lambda": 0.9
+          }
         },
         "parallel_scheme": {
           "kind": "Serial",
@@ -36,6 +45,7 @@
         },
         "results": {
           "path": "out/policy",
+
           "save": true,
           "format": {
             "kind": "ParquetFormat",
@@ -47,7 +57,7 @@
     {
       "kind": "Simulation",
       "params": {
-        "num_simulated_series": 2000,
+        "num_simulated_series": 500,
         "policy_path": "out/policy",
         "parallel_scheme": {
           "kind": "Serial",
