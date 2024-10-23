@@ -18,27 +18,17 @@ else
     niters = data.num_iterations
     ub_iters = Int64.(2 .^ (0:1:floor(log2(niters))))
 
+    # Primal with outer and inner bounds
     seed!(seed)
-    primal_pb, primal_trajs, primal_lbs, primal_times = primalsolve(M, nstages, risk, solver, state0, niters; verbose=true)
-    rec_ubs, rec_times = primalub(M, nstages, risk, solver, primal_trajs, ub_iters; verbose=true)
+    io_pb, io_lbs, io_ubs, io_times = problem_child_solve(M, nstages, risk, solver, state0, niters; verbose=true)
 
     # Export convergence data
-    dense_ubs = fill(NaN, niters)
-    for ub_pair in rec_ubs
-        dense_ubs[ub_pair[1]] = ub_pair[2]
-    end
-    dense_rec_times = fill(NaN, niters)
-    for (ub_pair, time) in zip(rec_ubs, rec_times)
-        dense_rec_times[ub_pair[1]] = time
-    end
 
     df = DataFrame(iteration=1:niters,
-        lower_bound=primal_lbs,
+        lower_bound=io_lbs,
         simulation=fill(NaN, niters),
-        upper_bound=dense_ubs,
-        primal_time=primal_times,
-        upper_bound_time=dense_rec_times,
-        time=primal_times + replace(dense_rec_times, NaN => 0.0))
+        upper_bound=io_ubs,
+        time=io_times)
 
     mkpath(output_path)
     writer(output_path * "/convergence" * extension, df)
