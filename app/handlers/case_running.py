@@ -75,10 +75,13 @@ class CaseRunning:
         logger = Log.configure_process_logger(q, logger_name)
         logger.info(f"Running - {logger_name} - {command_str}")
         try:
-            code, _ = asyncio.run(run_terminal(commands))
+            code, msg = asyncio.run(run_terminal(commands))
         except Exception as e:
             code = None
             logger.error(f"[{logger_name}] - Error: {str(e)}")
+            return
+        if code != 0:
+            logger.warning(f"[{logger_name}] - {msg}")
         logger.info(f"[{logger_name}] - Done: {code}")
 
     def _handle_decks_for_entrypoint(
