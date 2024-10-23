@@ -73,8 +73,8 @@ app.add_command(run)
 
 
 @click.command("postprocess")
-@click.argument("base_dir", type=str)
-def postprocess():
+@click.argument("config_json", type=str)
+def postprocess(config_json):
     """
     Groups and processes results from sddp-lab cases
     """
@@ -87,7 +87,7 @@ def postprocess():
 
     try:
         handler = ResultProcessing()
-        handler.handle(q)
+        handler.handle(config_json)
     except Exception as e:
         logger.exception(str(e))
     finally:
