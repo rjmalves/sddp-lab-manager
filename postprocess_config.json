@@ -1,0 +1,7 @@
+{
+    "source_dir": "./processed",
+    "target_dir": "./results",
+    "variables": {
+        "convergence": "out/policy/convergence.parquet"
+    }
+}

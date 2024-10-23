@@ -2,9 +2,12 @@
     "source_dir": "./generated",
     "target_dir": "./processed",
     "entrypoints": {
-        "sddp": "/home/rogerio/ONS/sddp-lab-manager/assets/default_sddp.jl"
+        "sddp": "/home/rogerio/git/sddp-lab-manager/assets/sddp.jl",
+        "philpott": "/home/rogerio/git/sddp-lab-manager/assets/philpott.jl",
+        "dual": "/home/rogerio/git/sddp-lab-manager/assets/dual.jl",
+        "reagan": "/home/rogerio/git/sddp-lab-manager/assets/reagan.jl"
     },
-    "environment": "/home/rogerio/git/sddp-lab",
-    "image_name": "/home/rogerio/git/sddp-lab/SDDPlab.so",
+    "environment": "/home/rogerio/git/lab2mslbo",
+    "image_name": "/home/rogerio/git/lab2mslbo/lab2mslbo.so",
     "processes": 2
 }

@@ -1,5 +1,5 @@
 {
-    "base_case": "./deck",
+    "base_case": "./data-1dtoy",
     "target_dir": "./generated",
     "params": {
         "files/algorithm/horizon": {
@@ -870,18 +870,18 @@
                 "kind": "Expectation",
                 "params": {}
             },
-            "cvar1": {
+            "cvar5050": {
                 "kind": "CVaR",
                 "params": {
-                    "alpha": 0.25,
-                    "lambda": 0.35
+                    "alpha": 0.50,
+                    "lambda": 0.50
                 }
             },
-            "cvar2": {
+            "cvar1050": {
                 "kind": "CVaR",
                 "params": {
-                    "alpha": 0.15,
-                    "lambda": 0.40
+                    "alpha": 0.10,
+                    "lambda": 0.50
                 }
             }
         }
