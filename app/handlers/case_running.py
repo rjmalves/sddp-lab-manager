@@ -1,5 +1,7 @@
 import asyncio
 import logging
+from dataclasses import dataclass
+from itertools import product
 from logging import INFO
 from multiprocessing import Pool, Queue
 from os import listdir
@@ -11,6 +13,14 @@ import pyjson5
 from app.utils.log import Log
 from app.utils.terminal import run_terminal
 from app.utils.timing import time_and_log
+
+
+@dataclass
+class CaseParams:
+    entrypoint_name: str
+    entrypoint_path: str
+    deck_name: str
+    deck_path: str
 
 
 class CaseRunning:
@@ -55,10 +65,7 @@ class CaseRunning:
     @staticmethod
     def _handle_single_deck(
         q: Queue,
-        deck_name: str,
-        deck_path: str,
-        entrypoint_name: str,
-        entrypoint_path: Path,
+        params: CaseParams,
         environment: str,
         image_name: str,
     ):
@@ -66,12 +73,12 @@ class CaseRunning:
             "julia",
             f"--project={environment}",
             f"-J{image_name}",
-            str(entrypoint_path),
-            deck_path,
+            str(params.entrypoint_path),
+            params.deck_path,
         ]
         command_str = " ".join(commands)
 
-        logger_name = f"{deck_name}-{entrypoint_name}"
+        logger_name = f"{params.deck_name}-{params.entrypoint_name}"
         logger = Log.configure_process_logger(q, logger_name)
         logger.info(f"Running - {logger_name} - {command_str}")
         try:
@@ -84,11 +91,11 @@ class CaseRunning:
             logger.warning(f"[{logger_name}] - {msg}")
         logger.info(f"[{logger_name}] - Done: {code}")
 
-    def _handle_decks_for_entrypoint(
-        self, q: Queue, entrypoint_name: str, entrypoint_path: Path
+    def _handle_decks_for_combinations(
+        self, q: Queue, params: list[CaseParams]
     ):
         with time_and_log(
-            message_root=f"Time for running {entrypoint_name}",
+            message_root="Time for running",
             logger=self._logger,
         ):
             with Pool(processes=self._config["processes"]) as pool:
@@ -97,27 +104,38 @@ class CaseRunning:
                         CaseRunning._handle_single_deck,
                         (
                             q,
-                            deck_name,
-                            str(
-                                self._path_for_target_deck_and_entrypoint(
-                                    deck_name, entrypoint_name
-                                )
-                            ),
-                            entrypoint_name,
-                            entrypoint_path,
+                            param,
                             self._config["environment"],
                             self._config["image_name"],
                         ),
                     )
-                    for deck_name in self._source_deck_names()
+                    for param in params
                 ]
                 [r.get(timeout=3600) for r in async_res]
+
+    def _generate_deck_entrypoint_combinations(self) -> list[CaseParams]:
+        # (entrypoint_name, entrypoint_path, deck_name, deck_path)
+        entrypoints = list(
+            (name, path) for name, path in self._config["entrypoints"].items()
+        )
+        deck_names = self._source_deck_names()
+        pairs = list(product(entrypoints, deck_names))
+        pairs = [
+            tuple([
+                *p[0],
+                p[1],
+                str(self._path_for_target_deck_and_entrypoint(p[1], p[0][0])),
+            ])
+            for p in pairs
+        ]
+        return [CaseParams(*p) for p in pairs]
 
     def handle(self, config_file: str, q: Queue):
         # Reads json config
         self._read_json_config(config_file)
         # Copy decks and prepare directories
         self._prepare_decks_for_entrypoints()
+        # Generate deck - entrypoint combination
+        combinations = self._generate_deck_entrypoint_combinations()
         # Handle each entrypoint
-        for name, path in self._config["entrypoints"].items():
-            self._handle_decks_for_entrypoint(q, name, Path(path))
+        self._handle_decks_for_combinations(q, combinations)
