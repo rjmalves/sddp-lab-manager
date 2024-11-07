@@ -8,30 +8,26 @@ if length(ARGS) != 1
 else
     cd(ARGS[1])
     # Gets deck info
-    M, data, solver, writer, extension = lab2mslbo.build_mslbo(".")
+    M, data = lab2mslbo.build_mslbo(".")
     output_path = data.output_path
-    state0 = data.state0
-    seed = data.seed
     risk = mk_primal_avar(data.risk_alpha; beta=data.risk_lambda)
     risk_dual = mk_copersp_avar(data.risk_alpha; beta=data.risk_lambda)
-    nstages = data.num_stages
-    niters = data.num_iterations
-    ub_iters = Int64.(2 .^ (0:1:floor(log2(niters))))
 
     # Primal with outer and inner bounds
-    seed!(seed)
-    io_pb, io_lbs, io_ubs, io_times = problem_child_solve(M, nstages, risk, solver, state0, niters; verbose=true)
+    seed!(data.seed)
+    io_pb, io_lbs, io_ubs, io_times = problem_child_solve(M, data.num_stages, risk, data.solver, data.state0, data.num_iterations; verbose=true)
 
     # Export convergence data
 
-    df = DataFrame(iteration=1:niters,
-        lower_bound=io_lbs,
-        simulation=fill(NaN, niters),
-        upper_bound=io_ubs,
-        time=io_times)
-
-    mkpath(output_path)
-    writer(output_path * "/convergence" * extension, df)
+    lab2mslbo.export_problem_child_convergence(
+        data.num_iterations,
+        io_lbs,
+        io_ubs,
+        io_times,
+        data.writer,
+        data.extension;
+        output_path_without_extension=data.output_path * "/convergence_reagan",
+    )
 
 
 end

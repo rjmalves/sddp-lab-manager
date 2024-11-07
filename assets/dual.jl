@@ -8,34 +8,30 @@ if length(ARGS) != 1
 else
     cd(ARGS[1])
     # Gets deck info
-    M, data, solver, writer, extension = lab2mslbo.build_mslbo(".")
-    output_path = data.output_path
-    state0 = data.state0
-    seed = data.seed
+    M, data = lab2mslbo.build_mslbo(".")
+
     risk = mk_primal_avar(data.risk_alpha; beta=data.risk_lambda)
     risk_dual = mk_copersp_avar(data.risk_alpha; beta=data.risk_lambda)
-    nstages = data.num_stages
-    niters = data.num_iterations
-    ub_iters = Int64.(2 .^ (0:1:floor(log2(niters))))
 
-    seed!(seed)
-    primal_pb, primal_trajs, primal_lbs, primal_times = primalsolve(M, nstages, risk, solver, state0, niters; verbose=true)
+    seed!(data.seed)
+    primal_pb, primal_trajs, primal_lbs, primal_times = primalsolve(M, data.num_stages, risk, data.solver, data.state0, data.num_iterations; verbose=true)
 
-    seed!(seed)
-    dual_pb, dual_ubs, dual_times = dualsolve(M, nstages, risk_dual, solver, state0, niters; verbose=true)
+    seed!(data.seed)
+    dual_pb, dual_ubs, dual_times = dualsolve(M, data.num_stages, risk_dual, data.solver, data.state0, data.num_iterations; verbose=true)
 
     # Export convergence data
 
-    df = DataFrame(iteration=1:niters,
-        lower_bound=primal_lbs,
-        simulation=fill(NaN, niters),
-        upper_bound=dual_ubs,
-        primal_time=primal_times,
-        upper_bound_time=dual_times,
-        time=primal_times + dual_times)
+    lab2mslbo.export_primal_with_dual_ub_convergence(
+        data.num_iterations,
+        primal_lbs,
+        primal_times,
+        dual_ubs,
+        dual_times,
+        data.writer,
+        data.extension;
+        output_path_without_extension=data.output_path * "/convergence_dual",
+    )
 
-    mkpath(output_path)
-    writer(output_path * "/convergence" * extension, df)
 
 
 end
