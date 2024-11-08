@@ -18,7 +18,7 @@ else
     io_pb, io_lbs, io_ubs, io_times = problem_child_solve(M, data.num_stages, risk, data.solver, data.state0, data.num_iterations; verbose=true)
 
     # Export convergence data
-
+    mkpath(data.output_path)
     lab2mslbo.export_problem_child_convergence(
         data.num_iterations,
         io_lbs,

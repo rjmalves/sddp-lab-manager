@@ -18,6 +18,7 @@ else
     rec_ubs, rec_times = primalub(M, data.num_stages, risk, data.solver, primal_trajs, ub_iters; verbose=true)
 
     # Export convergence data
+    mkpath(data.output_path)
     lab2mslbo.export_primal_with_ub_convergence(
         data.num_iterations,
         primal_lbs,

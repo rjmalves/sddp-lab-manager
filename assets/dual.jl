@@ -20,7 +20,7 @@ else
     dual_pb, dual_ubs, dual_times = dualsolve(M, data.num_stages, risk_dual, data.solver, data.state0, data.num_iterations; verbose=true)
 
     # Export convergence data
-
+    mkpath(data.output_path)
     lab2mslbo.export_primal_with_dual_ub_convergence(
         data.num_iterations,
         primal_lbs,
