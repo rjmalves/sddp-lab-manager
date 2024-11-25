@@ -20,7 +20,9 @@ else
     policy = artifacts[policy_index].policy
 
     # Transforms to vertex policy graph
-    inner_policy, upper_bound = inner_dp.__build_and_compute_ub_model(entrypoint.inputs.files, policy)
+    inner_policy, upper_bound, upper_bound_time = inner_dp.__build_and_compute_ub_model(entrypoint.inputs.files, policy)
+    inner_dp.__update_convergence_file(entrypoint.inputs.files, upper_bound, upper_bound_time, e)
+
     # Generates fake policy artifact
     artifacts[2] = SDDPlab.Tasks.PolicyArtifact(
         artifacts[policy_index].task,
