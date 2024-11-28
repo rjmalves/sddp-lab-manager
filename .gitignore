@@ -164,6 +164,7 @@ cython_debug/
 generated/*
 processed/*
 results/*
+*.json
 
 # Build system
 uv.lock
