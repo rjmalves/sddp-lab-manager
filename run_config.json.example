@@ -1,0 +1,14 @@
+{
+    "source_dir": "./generated",
+    "target_dir": "./processed",
+    "entrypoints": {
+        "sddpjl_sddp_policy_outer_sim": "/home/rogerio/git/sddp-lab-manager/assets/sddpjl_sddp_policy_outer_sim.jl",
+        "sddpjl_sddp_policy_inner_sim": "/home/rogerio/git/sddp-lab-manager/assets/sddpjl_sddp_policy_inner_sim.jl",
+        "dualsddp_philpott_policy_inner_sim": "/home/rogerio/git/sddp-lab-manager/assets/dualsddp_philpott_policy_inner_sim.jl",
+        "dualsddp_dual_policy_inner_sim": "/home/rogerio/git/sddp-lab-manager/assets/dualsddp_dual_policy_inner_sim.jl",
+        "dualsddp_reagan_policy_inner_sim": "/home/rogerio/git/sddp-lab-manager/assets/dualsddp_reagan_policy_inner_sim.jl"
+    },
+    "environment": "/home/rogerio/git/lab2mslbo",
+    "image_name": "/home/rogerio/git/lab2mslbo/lab2mslbo.so",
+    "processes": 2
+}

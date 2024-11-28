@@ -5,6 +5,7 @@
         "convergence": "out/policy/convergence.parquet",
         "cuts": "out/policy/cuts.parquet",
         "operation_buses": "out/simulation/operation_buses.parquet",
+        "operation_lines": "out/simulation/operation_lines.parquet",
         "operation_hydros": "out/simulation/operation_hydros.parquet",
         "operation_system": "out/simulation/operation_system.parquet",
         "operation_thermals": "out/simulation/operation_thermals.parquet"

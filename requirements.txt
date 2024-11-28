@@ -1,4 +1,0 @@
-pyjson5
-click
-polars
-python-dateutil

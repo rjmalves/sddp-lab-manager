@@ -72,7 +72,7 @@ class CaseRunning:
         commands = [
             "julia",
             f"--project={environment}",
-            f"-J{image_name}",
+            f"-J{image_name}" if image_name else "",
             str(params.entrypoint_path),
             params.deck_path,
         ]

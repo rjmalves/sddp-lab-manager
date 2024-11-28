@@ -2,6 +2,7 @@ import logging
 from logging import INFO
 from os import listdir, makedirs
 from os.path import isdir, isfile, join
+from typing import Union
 
 import polars as pl
 import pyjson5
@@ -20,7 +21,9 @@ class ResultProcessing:
         with open(config_file) as f:
             self._config = pyjson5.load(f)
 
-    def _assemble_variable_df(self, var_relative_path: str) -> pl.DataFrame:
+    def _assemble_variable_df(
+        self, var_relative_path: str
+    ) -> Union[pl.DataFrame, None]:
         dfs: list[pl.DataFrame] = []
         for casename in listdir(self._config["source_dir"]):
             casepath = join(self._config["source_dir"], casename)
@@ -53,7 +56,8 @@ class ResultProcessing:
     def _handle_variable(self, var_name: str, var_relative_path: str):
         self.log(f"Postprocessing variable {var_name}...")
         df = self._assemble_variable_df(var_relative_path)
-        self._export_result_df(df, var_name)
+        if df is not None:
+            self._export_result_df(df, var_name)
 
     def handle(self, config_file: str):
         self._read_json_config(config_file)

@@ -164,3 +164,6 @@ cython_debug/
 generated/*
 processed/*
 results/*
+
+# Build system
+uv.lock
