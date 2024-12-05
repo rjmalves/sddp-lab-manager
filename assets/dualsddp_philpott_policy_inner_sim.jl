@@ -4,6 +4,11 @@ using DualSDDP
 using DataFrames
 using lab2mslbo: lab2mslbo
 using Random: seed!
+using JuMP
+
+using HiGHS
+optimizer = optimizer_with_attributes(HiGHS.Optimizer)
+set_attribute(optimizer, "log_to_console", false)
 
 e = CompositeException()
 
@@ -12,7 +17,7 @@ if length(ARGS) != 1
 else
     cd(ARGS[1])
     # Gets deck info
-    M, data = lab2mslbo.build_mslbo(".")
+    M, data = lab2mslbo.build_mslbo(".", optimizer)
 
     ## ---------- DualSDDP calls ------------
 
@@ -20,8 +25,8 @@ else
     ub_iters = Int64.(2 .^ (4:1:floor(log2(data.num_iterations))))
 
     seed!(data.seed)
-    primal_pb, primal_trajs, primal_lbs, primal_times = primalsolve(M, data.num_stages, risk, data.solver, data.state0, data.num_iterations; verbose=true)
-    rec_ubs, rec_times = primalub(M, data.num_stages, risk, data.solver, primal_trajs, ub_iters; verbose=true)
+    primal_pb, primal_trajs, primal_lbs, primal_times = primalsolve(M, data.num_stages, risk, optimizer, data.state0, data.num_iterations; verbose=true)
+    rec_ubs, rec_times = primalub(M, data.num_stages, risk, optimizer, primal_trajs, ub_iters; verbose=true)
 
     # Export convergence data
     mkpath(data.output_path)
@@ -50,13 +55,13 @@ else
 
     lab2mslbo.translate_cuts_states(cut_path, vertex_name_parser)
 
-    entrypoint = SDDPlab.Inputs.Entrypoint("main.jsonc", e)
+    entrypoint = SDDPlab.Inputs.Entrypoint("main.jsonc", optimizer, e)
     policy = SDDPlab.Tasks.__build_model(entrypoint.inputs.files)
     SDDP.read_cuts_from_file(policy, cut_path)
 
     # Transforms to vertex policy graph
     inner_policy, upper_bound, upper_bound_time = lab2mslbo.__build_and_compute_ub_model(
-        entrypoint.inputs.files, policy
+        entrypoint.inputs.files, policy, optimizer
     )
 
     # Generates fake policy artifact and artifacts vector
@@ -65,7 +70,7 @@ else
     policy_task_definition = task_definitions[policy_task_index]
 
     artifacts = Vector{SDDPlab.Tasks.TaskArtifact}([
-        SDDPlab.Tasks.InputsArtifact(entrypoint.inputs.path, entrypoint.inputs.files),
+        SDDPlab.Tasks.InputsArtifact(entrypoint.inputs.path, entrypoint.inputs.files, optimizer),
         SDDPlab.Tasks.PolicyArtifact(policy_task_definition, policy, entrypoint.inputs.files),
     ])
 

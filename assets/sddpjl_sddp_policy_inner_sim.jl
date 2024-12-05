@@ -1,5 +1,11 @@
 using SDDPlab: SDDPlab
 using lab2mslbo: lab2mslbo
+using JuMP
+
+using HiGHS
+
+optimizer = optimizer_with_attributes(HiGHS.Optimizer)
+set_attribute(optimizer, "log_to_console", false)
 
 e = CompositeException()
 
@@ -9,7 +15,7 @@ else
     cd(ARGS[1])
 
     # Runs policy evaluation
-    entrypoint = SDDPlab.Inputs.Entrypoint("main.jsonc", e)
+    entrypoint = SDDPlab.Inputs.Entrypoint("main.jsonc", optimizer, e)
     artifacts = SDDPlab.__run_tasks!(entrypoint, e)
     SDDPlab.__log_errors(e)
 
@@ -22,7 +28,7 @@ else
 
     # Transforms to vertex policy graph
     inner_policy, upper_bound, upper_bound_time = lab2mslbo.__build_and_compute_ub_model(
-        entrypoint.inputs.files, policy
+        entrypoint.inputs.files, policy, optimizer
     )
 
     lab2mslbo.__update_convergence_file(
@@ -35,7 +41,7 @@ else
     policy_task_definition = task_definitions[policy_task_index]
 
     artifacts = Vector{SDDPlab.Tasks.TaskArtifact}([
-        SDDPlab.Tasks.InputsArtifact(entrypoint.inputs.path, entrypoint.inputs.files),
+        SDDPlab.Tasks.InputsArtifact(entrypoint.inputs.path, entrypoint.inputs.files, optimizer),
         SDDPlab.Tasks.PolicyArtifact(
             policy_task_definition, inner_policy, entrypoint.inputs.files
         ),
