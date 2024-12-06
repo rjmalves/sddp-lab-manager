@@ -41,6 +41,8 @@ class ResultProcessing:
                     case=pl.lit(casename), method=pl.lit(methodname)
                 )
                 dfs.append(df)
+        if len(dfs) == 0:
+            return None
         df = pl.concat(dfs, how="diagonal")
         cols = df.columns
         var_columns = [c for c in cols if c not in ["case", "method"]]
