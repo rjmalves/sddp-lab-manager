@@ -5,6 +5,7 @@ from itertools import product
 from logging import INFO
 from multiprocessing import Pool, Queue
 from os import listdir
+from os.path import join
 from pathlib import Path
 from shutil import copytree
 
@@ -90,6 +91,8 @@ class CaseRunning:
         if code != 0:
             logger.warning(f"[{logger_name}] - {msg}")
         logger.info(f"[{logger_name}] - Done: {code}")
+        with open(join(params.deck_path, "echo.log"), "w") as logfile:
+            logfile.write(msg)
 
     def _handle_decks_for_combinations(
         self, q: Queue, params: list[CaseParams]

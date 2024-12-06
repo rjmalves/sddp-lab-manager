@@ -59,10 +59,11 @@ else
 
     lab2mslbo.read_vertices_from_file(
         model,
-        cut_path;
+        cut_path,
+        optimizer;
         dualcuts=true,
         vertex_name_parser=vertex_name_parser,
-        vertex_selection=false,
+        vertex_selection=true,
     )
 
     # Generates fake policy artifact and artifacts vector

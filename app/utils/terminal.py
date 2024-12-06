@@ -1,7 +1,7 @@
 import asyncio
 from typing import List, Optional, Tuple
 
-TIMEOUT_DEFAULT = 3600
+TIMEOUT_DEFAULT = 6 * 3600
 
 
 async def run_terminal(
