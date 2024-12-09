@@ -47,6 +47,18 @@ class ResultProcessing:
         cols = df.columns
         var_columns = [c for c in cols if c not in ["case", "method"]]
         df = df[["case", "method"] + var_columns]
+        # Casts String columns to Enum
+        string_columns = [
+            colname
+            for (coltype, colname) in zip(df.dtypes, df.columns)
+            if coltype == pl.String
+        ]
+        string_col_unique_values = {
+            c: pl.Enum(df[c].unique()) for c in string_columns
+        }
+        df = df.with_columns(
+            pl.col(c).cast(string_col_unique_values[c]) for c in string_columns
+        )
         return df
 
     def _export_result_df(self, df: pl.DataFrame, var_name: str):
