@@ -12,7 +12,7 @@ from shutil import copytree
 import pyjson5
 
 from app.utils.log import Log
-from app.utils.terminal import run_terminal
+from app.utils.terminal import TIMEOUT_DEFAULT, run_terminal
 from app.utils.timing import time_and_log
 
 
@@ -114,7 +114,13 @@ class CaseRunning:
                     )
                     for param in params
                 ]
-                [r.get(timeout=3600) for r in async_res]
+                [
+                    r.get(
+                        timeout=(len(params) // self._config["processes"])
+                        * TIMEOUT_DEFAULT
+                    )
+                    for r in async_res
+                ]
 
     def _generate_deck_entrypoint_combinations(self) -> list[CaseParams]:
         # (entrypoint_name, entrypoint_path, deck_name, deck_path)
